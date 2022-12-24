@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string>
+#include <stdlib.h>
 
 // キャラクターの構造体を宣言する
 typedef struct {
@@ -9,6 +9,7 @@ typedef struct {
     int maxMp;     // 最大MP
     char name[20]; // 名前
     char aa[256];  // モンスターのアスキーアート
+    int  command;  // コマンド
 } CHARACTER; 
 
 // モンスターの種類を宣言する
@@ -39,6 +40,15 @@ enum
 // キャラクターの配列を定義する
 CHARACTER characters[CHARACTER_MAX];
 
+// コマンドの種類を定義する
+enum
+{
+    COMMAND_FIGHT, // 戦う
+    COMMAND_SPELL, // 呪文
+    COMMAND_RUN,   // 逃げる
+    COMMAND_MAX,   // コマンドの種類の数
+};
+
 // ゲームを初期化する関数を定義する
 void Init()
 {
@@ -49,6 +59,8 @@ void Init()
 //戦闘シーンの画面を描画する関数を定義する
 void DrawBattleScreen()
 {
+    // 画面をクリアする (Linux)
+    system("clear"); 
     // プレイヤーの名前を表示する 
     printf("%s\n",characters[MONSTER_PLAYER].name);
     // プレイヤーのステータスを表示する
@@ -72,10 +84,33 @@ void Battle(int _monster)
 {
     // モンスターのステータスを初期化する
     characters[CHARACTER_MONSTER] = monsters[_monster];
-    // 戦闘シーンを描画する関数を呼び出す
-    DrawBattleScreen();
+    // 戦闘シーンの最初のメッセージを表示する
+    printf("%sが　あらわれた！\n", characters[CHARACTER_MONSTER].name);
     // キーボードから１文字読みこむ (Linux)
     getc(stdin);
+
+    // 戦闘シーンを描画する関数を呼び出す
+    DrawBattleScreen();
+
+    // 戦闘が終了するまでループする
+    while(1) {
+        // 各キャラクターを反復する
+        for (int i = 0; i < CHARACTER_MAX; i++) {
+            // キャラクターが切り替わる毎に戦闘シーンを描画する関数を呼び出す
+            DrawBattleScreen();
+            // 選択されたコマンドで分岐する
+            switch (characters[i].command) {
+                case COMMAND_FIGHT: // 戦う
+                    printf("%sの　こうげき！\n", characters[i].name);
+                    getc(stdin); // キーボード入力を待つ
+                    break;
+                case COMMAND_SPELL: // 呪文
+                    break;
+                case COMMAND_RUN:   // 逃げる
+                    break;
+            }
+        }
+    }
 }
 
 int main()
