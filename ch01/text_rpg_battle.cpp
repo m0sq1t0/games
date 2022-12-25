@@ -79,6 +79,30 @@ void DrawBattleScreen()
             characters[MONSTER_SLIME].maxHp);
     printf("\n");
 }
+
+// コマンドの名前を宣言する
+char commandNames[COMMAND_MAX][20] = {
+    "たたかう",
+    "じゅもん",
+    "にげる",
+};
+// コマンドを選択する関数を定義する
+void SelectCommand()
+{
+    // コマンドが決定されるまでループする
+    while(1) {
+        // コマンドの一覧を表示する
+        for (int i = 0; i < COMMAND_MAX; i++) {
+            // コマンドの名前を表示する
+            printf("%s\n", commandNames[i]);
+        }
+        // 入力されたキーによって分岐する
+        switch(getc(stdin)) {
+
+        }
+    }
+}
+
 // 戦闘シーンの関数を定義する
 void Battle(int _monster)
 {
@@ -98,6 +122,8 @@ void Battle(int _monster)
         for (int i = 0; i < CHARACTER_MAX; i++) {
             // キャラクターが切り替わる毎に戦闘シーンを描画する関数を呼び出す
             DrawBattleScreen();
+            // コマンドを選択する関数を呼び出す
+            SelectCommand();
             // 選択されたコマンドで分岐する
             switch (characters[i].command) {
                 case COMMAND_FIGHT: // 戦う
