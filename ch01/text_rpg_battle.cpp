@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "getch.h"
 
 // キャラクターの構造体を宣言する
 typedef struct {
@@ -97,7 +98,7 @@ void SelectCommand()
             printf("%s\n", commandNames[i]);
         }
         // 入力されたキーによって分岐する
-        switch(getc(stdin)) {
+        switch(getch()) {
 
         }
     }
@@ -111,7 +112,7 @@ void Battle(int _monster)
     // 戦闘シーンの最初のメッセージを表示する
     printf("%sが　あらわれた！\n", characters[CHARACTER_MONSTER].name);
     // キーボードから１文字読みこむ (Linux)
-    getc(stdin);
+    getch();
 
     // 戦闘シーンを描画する関数を呼び出す
     DrawBattleScreen();
@@ -128,7 +129,7 @@ void Battle(int _monster)
             switch (characters[i].command) {
                 case COMMAND_FIGHT: // 戦う
                     printf("%sの　こうげき！\n", characters[i].name);
-                    getc(stdin); // キーボード入力を待つ
+                    getch(); // キーボード入力を待つ
                     break;
                 case COMMAND_SPELL: // 呪文
                     break;
