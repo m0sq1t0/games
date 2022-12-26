@@ -9,7 +9,7 @@ int getch(void)
     int c;
     tcgetattr(STDIN_FILENO, &cooked);
     raw = cooked;
-    cfmakeraw(&raw);
+    raw.c_lflag &= ~(ICANON|ECHO);
 
     tcsetattr(STDIN_FILENO, 0, &raw); // 端末をrawモードにセット
     c = getchar();
