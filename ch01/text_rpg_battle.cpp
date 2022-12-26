@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <string.h>
 #include "getch.h"
 
 // キャラクターの構造体を宣言する
@@ -8,9 +10,11 @@ typedef struct {
     int maxHp;     // 最大HP
     int mp;        // MP
     int maxMp;     // 最大MP
+    int  attack;   // 攻撃力
     char name[20]; // 名前
     char aa[256];  // モンスターのアスキーアート
     int  command;  // コマンド
+    int  target;   // 攻撃対象
 } CHARACTER; 
 
 // モンスターの種類を宣言する
@@ -23,8 +27,8 @@ enum
 
 // モンスターのステータつの配列を定義する
 CHARACTER monsters[MONSTER_MAX] = {
-        { 15,15,15,15, "ゆうしゃ", ""},
-        {  3, 3, 0, 0, "スライム", 
+        { 15,15,15,15, 3, "ゆうしゃ", ""},
+        {  3, 3, 0, 0, 2, "スライム",
         "／・д・＼\n"
         "〜〜〜〜〜"
         },
@@ -131,6 +135,11 @@ void Battle(int _monster)
 {
     // モンスターのステータスを初期化する
     characters[CHARACTER_MONSTER] = monsters[_monster];
+    // プレイヤーの攻撃対象をモンスターに設定する
+    characters[CHARACTER_PLAYER].target = CHARACTER_MONSTER;
+    // モンスターの攻撃対象をプレイヤーに設定する
+    characters[CHARACTER_MONSTER].target = CHARACTER_PLAYER;
+
     // 戦闘シーンの最初のメッセージを表示する
     printf("%sが　あらわれた！\n", characters[CHARACTER_MONSTER].name);
     // キーボードから１文字読みこむ (Linux)
@@ -150,9 +159,48 @@ void Battle(int _monster)
             // 選択されたコマンドで分岐する
             switch (characters[i].command) {
                 case COMMAND_FIGHT: // 戦う
+                {
                     printf("%sの　こうげき！\n", characters[i].name);
+                    // 敵に与えるダメージを計算する
+                    int damage = 1 + rand() % characters[i].attack;
+                    // 敵にダメージを与える
+                    characters[characters[i].target].hp -= damage;
                     getch(); // キーボード入力を待つ
-                    break;
+                    printf("%sに　%dの　ダメージ！\n",
+                        characters[characters[i].target].name, damage);
+                    getch(); // キーボード入力を待つ
+                    // 敵のHPが負になったかどうかを判定する
+                    if (characters[characters[i].target].hp < 0) {
+                        // 敵のHPを0にする
+                        characters[characters[i].target].hp = 0;
+                    }
+                    // 攻撃対象を倒したかどうかを判定する
+                    if (characters[characters[i].target].hp <= 0) {
+                        //攻撃対象によって処理を分岐させる
+                        switch(characters[i].target) {
+                            // プレイヤーなら
+                            case CHARACTER_PLAYER:
+                            break;
+                            // モンスターなら
+                            case CHARACTER_MONSTER:
+                            // モンスターを倒したメッセージを表示させる
+                            getch(); // キーボードからの入力を待つ
+                            strcpy(characters[characters[i].target].aa, "\n"); // Linux
+                            // 戦闘シーンを描画する関数を呼び出す
+                            DrawBattleScreen();
+                            printf("%sを　たおした！\n", characters[characters[i].target].name);
+                            // モンスターのアスキーアートを何も表示しないように書き換える
+                            break;
+                        }
+                        getch(); // キーボードからの入力を待つ
+                        // 戦闘シーンの関数を抜ける
+                        return;
+                    }
+
+                    // 戦闘シーンを描画する関数を呼び出す
+                    DrawBattleScreen();
+                }
+                break;
                 case COMMAND_SPELL: // 呪文
                     break;
                 case COMMAND_RUN:   // 逃げる
@@ -164,6 +212,8 @@ void Battle(int _monster)
 
 int main()
 {
+    // 乱数を初期化する
+    srand((unsigned int)time(NULL));
     // ゲームを初期化する関数を呼び出す
     Init();
     // 戦闘シーンの関数を呼び出す
