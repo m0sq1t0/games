@@ -92,15 +92,37 @@ void SelectCommand()
 {
     // コマンドが決定されるまでループする
     while(1) {
+        // 戦闘画面を描画する関数を呼び出す
+        DrawBattleScreen();
         // コマンドの一覧を表示する
         for (int i = 0; i < COMMAND_MAX; i++) {
+            // 選択中のコマンドなら
+            if (i == characters[CHARACTER_PLAYER].command) {
+                // カーソルを描画する
+                printf("＞");
+            } else {
+                // そうでなければ全角スペースを表示する
+                printf("　");
+            }
             // コマンドの名前を表示する
             printf("%s\n", commandNames[i]);
         }
         // 入力されたキーによって分岐する
         switch(getch()) {
-
+            case 'w': // wキーが押されたら
+                // 上のコマンドに切り替える
+                characters[CHARACTER_PLAYER].command--;
+                break;
+            case 's': // sキーが押されたら
+                // 下のコマンドに切り替える
+                characters[CHARACTER_PLAYER].command++;
+                break;
+            default: // 上記以外のキーが押されたら
+                return;  // 関数を抜ける
         }
+        // カーソルを上下にループさせる
+        characters[CHARACTER_PLAYER].command = 
+            (COMMAND_MAX + characters[CHARACTER_PLAYER].command) % COMMAND_MAX;
     }
 }
 
