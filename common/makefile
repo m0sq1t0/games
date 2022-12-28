@@ -4,11 +4,17 @@ VPATH = inc:src
 %.o: %.cpp
 	g++ -o $@ -Wall -g -fPIC -Iinc -c $<
 
-getchtest: getchtest.o libgcom.so
-	gcc -o $@ -L. -lgcom $<  
+# Use static library for now 
+getchtest: getchtest.o libgcom.a
+	gcc -o $@ $< -L. -lgcom  
 
+# shared library 
 libgcom.so: getch.o
 	gcc -o $@ -shared $<
+
+# static library
+libgcom.a: getch.o
+	ar -rc libgcom.a getch.o
 
 clean:
 	rm -rf *.so *.o getchtest
