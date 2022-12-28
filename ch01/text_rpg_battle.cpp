@@ -58,6 +58,8 @@ enum
     COMMAND_MAX,   // コマンドの種類の数
 };
 
+#define SPELL_COST (3) // 呪文の消費MPを定義する
+
 // ゲームを初期化する関数を定義する
 void Init()
 {
@@ -98,6 +100,8 @@ char commandNames[COMMAND_MAX][20] = {
 // コマンドを選択する関数を定義する
 void SelectCommand()
 {
+    // プレイヤーのコマンドを初期化する
+    characters[CHARACTER_PLAYER].command = COMMAND_FIGHT;
     // コマンドが決定されるまでループする
     while(1) {
         // 戦闘画面を描画する関数を呼び出す
@@ -208,6 +212,24 @@ void Battle(int _monster)
                 }
                 break;
                 case COMMAND_SPELL: // 呪文
+                    // MPが足りるかどうか判定する
+                    if (characters[i].mp < SPELL_COST) {
+                        printf("ＭＰが　たりない！\n");
+                        // 呪文を唱える処理を抜ける
+                        break;
+                    }
+                    characters[i].mp -= SPELL_COST;
+                    // 呪文をとなえたメッセージを表示する
+                    printf("%sは　ヒールのじゅもんを　となえた！\n", characters[i].name);
+                    // HPを回復させる
+                    characters[i].hp = characters[i].maxHp;
+                    // キーボード入力を待つ
+                    getch();
+                    // 戦闘シーンを描画する関数を呼び出す
+                    DrawBattleScreen();
+                    // HPが回復したメッセージを表示する
+                    printf("%sのきずが　かいふくした！\n", characters[i].name);
+                    getch();
                     break;
                 case COMMAND_RUN:   // 逃げる
                     // 逃げ出したメッセージを表示する
