@@ -24,16 +24,22 @@ bool field[FIELD_HEIGHT][FIELD_WIDTH] = {
 void DrawField()
 {
     system("clear"); // [4-1-1] 画面をクリアする
+    // [4-1-1-1] 枠を描く
+    for (int x = 0; x < FIELD_WIDTH+2; x++) {putc('+',stdout);} putc('\n', stdout);
     // [4-1-2] フィールドのすべての行を反復する
     for (int y = 0; y < FIELD_HEIGHT; y++) {
+        // [4-1-2-1] 枠を描く
+        putc('|',stdout);
         // [4-1-3] フィールドのすべての列を反復する
         for (int x = 0; x < FIELD_WIDTH; x++) {
             // [4-1-4]セルが生きていれば'■'を、死んでいれば'　’を描画する
             // printf("%s", field[y][x]? "■":"　");
             printf("%s", field[y][x]? "*":" ");
         }
-        printf("\n"); // [4-1-5] 1行描画する毎に改行する
+        printf("|\n"); // [4-1-5] 1行描画する毎に改行する (枠も描く)
     }
+    // [4-1-1-1] 枠を描く
+    for (int x = 0; x < FIELD_WIDTH+2; x++) {putc('+',stdout);} putc('\n', stdout);
 }
 // [4-2] 対象のセルと隣接する生きたセルの数を取得する関数を宣言する
 int GetLivingCellsCount(int _x, int _y)
