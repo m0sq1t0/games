@@ -6,17 +6,19 @@
 #include "getch.h" // getch()関数を使用するために必要
 
 // [2] 定数を定義する場所
-#define FIELD_WIDTH  (12) // [2-1]フィールドの幅を定義する
-#define FIELD_HEIGHT (12) // [2-1]フィールドの高さを定義する
-#define FPS (2)           // [2-3]1秒当たりの更新回数を定義する
+#define FIELD_WIDTH  (160) // [2-1]フィールドの幅を定義する
+#define FIELD_HEIGHT (160) // [2-1]フィールドの高さを定義する
+#define FPS (5)           // [2-3]1秒当たりの更新回数を定義する
 #define INTERVAL (1000000/FPS) // [2-4]更新間隔 (ナノ秒)を定義する
 
 // [3] 変数を定義する場所
 // [3-1] フィールドを定義する
 bool field[FIELD_HEIGHT][FIELD_WIDTH] = {
+    /*
     {0,1,0}, // 足りない部分は0 (false)で埋まる
     {0,0,1},
     {1,1,1},
+    */
 };
 
 // [4] 関数を定義する場所
@@ -99,9 +101,47 @@ void StepSimulation()
     // [4-3-13]次のステップのフィールドを現在のフィールドにコピーする
     memcpy(field, nextField, sizeof(field));
 }
+// [4-4]パターンをフィールドにコピーする関数を定義する
+void PatternTransfer(
+    int _destX, int _destY,
+    int _srcWidth, int _srcHeight,
+    bool *_pPattern)
+{
+    // [4-4-1]パターン内の全ての行を反復する
+    for (int y = 0; y < _srcHeight; y++) {
+        // [4-4-2]パターン内の全ての列を反復する
+        for (int x = 0; x < _srcWidth; x++) {
+            // [4-4-3]パターンをフィールドにコピーする
+            field[_destY + y][_destX + x] = _pPattern[y * _srcWidth + x];
+        }
+    }
+}
 // [4-5] ログラムの開始点を定義する
 int main()
 {
+    const int patternWidth = 10; // [4-5-1] パターンの幅を定義する
+    const int patternHeight = 8; // [4-5-2] パターンの高さを定義する
+
+    // [4-5-3] 初期パターンを定義する
+    bool pattern[patternHeight][patternWidth] =
+    {
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,1,0,0},
+        {0,0,0,0,0,1,0,1,1,0},
+        {0,0,0,0,0,1,0,1,0,0},
+        {0,0,0,0,0,1,0,0,0,0},
+        {0,0,0,1,0,0,0,0,0,0},
+        {0,1,0,1,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+    };
+
+    PatternTransfer(
+        FIELD_WIDTH / 2 - patternWidth / 2,
+        FIELD_HEIGHT / 2 - patternHeight / 2,
+        patternWidth,
+        patternHeight,
+        (bool*)pattern);
+
     clock_t lastClock = clock(); // [4-5-5]前回の経過時間を定義する
     // [4-5-6] メインループ
     while(1) {
